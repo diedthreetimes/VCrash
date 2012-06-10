@@ -49,83 +49,84 @@ using namespace ns3;
  */
 class HighwayProject {
 private:
-    // The time step for highways
-    double m_dt;
-    // A map of highwayId to highway
-    std::map<int, ns3::Ptr<ns3::Highway> > m_highways;
-    // A list of vehicle generators
-    std::list<ns3::Ptr<ns3::VehicleGenerator> > m_vehGens;
-    // A list of traffic generators
-    std::list<ns3::Ptr<ns3::TrafficLightGenerator> > m_trafficGens;
-    // The XML document for configuring the HighwayProject
-    HighwayProjectXml m_projectXml;
+  // The time step for highways
+  double m_dt;
+  // A map of highwayId to highway
+  std::map<int, ns3::Ptr<ns3::Highway> > m_highways;
+  // A list of vehicle generators
+  std::list<ns3::Ptr<ns3::VehicleGenerator> > m_vehGens;
+  // A list of traffic generators
+  std::list<ns3::Ptr<ns3::TrafficLightGenerator> > m_trafficGens;
+  // The XML document for configuring the HighwayProject
+  HighwayProjectXml m_projectXml;
 
-    // The name of the file used for the vehilce tracing
-    string m_vehTraceFileName;
-    // The name of the file used for the net tracing
-    string m_netTraceFileName;
+  // The name of the file used for the vehilce tracing
+  string m_vehTraceFileName;
+  // The name of the file used for the net tracing
+  string m_netTraceFileName;
 
-    // The output stream for vehicle tracing
-    std::ofstream m_vehTrace;
-    // The output stream for net tracing
-    std::ofstream m_netTrace;
+  // The output stream for vehicle tracing
+  std::ofstream m_vehTrace;
+  // The output stream for net tracing
+  std::ofstream m_netTrace;
 
-    // The callbacks for the various net traces
-    ns3::VehicleReceiveCallback vehReceiveCallback;
-    ns3::DeviceTraceCallback deviceTraceCallback;
-    ns3::PhyRxOkTraceCallback phyRxOkTraceCallback;
-    ns3::PhyRxErrorTraceCallback phyRxErrorCallback;
-    ns3::PhyTxTraceCallback phyTxTraceCallback;
-    ns3::PhyStateTraceCallback phyStateTraceCallback;
+  // The callbacks for the various net traces
+  ns3::VehicleReceiveCallback vehReceiveCallback;
+  ns3::DeviceTraceCallback deviceTraceCallback;
+  ns3::PhyRxOkTraceCallback phyRxOkTraceCallback;
+  ns3::PhyRxErrorTraceCallback phyRxErrorCallback;
+  ns3::PhyTxTraceCallback phyTxTraceCallback;
+  ns3::PhyStateTraceCallback phyStateTraceCallback;
 
-    // A private function for calculating the routing maps for Highways
-    map<int, int> Djikstra(int source, map<int, list<int> > connectionList);
+  // A private function for calculating the routing maps for Highways
+  map<int, int> Djikstra(int source, map<int, list<int> > connectionList);
 
     
 
 public:
-    // The only constructor
-    HighwayProject(HighwayProjectXml projectXml);
+  // The only constructor
+  HighwayProject(HighwayProjectXml projectXml);
 
-    // Sets the name of the trace file for the vehicle trace
-    void SetVehTraceFile(string fileName);
-    // Sets the name of the trace file for the net trace
-    void SetNetTraceFile(string fileName);
+  // Sets the name of the trace file for the vehicle trace
+  void SetVehTraceFile(string fileName);
+  // Sets the name of the trace file for the net trace
+  void SetNetTraceFile(string fileName);
 
-    // Starts the highway simulation
-    void Start();
+  // Starts the highway simulation
+  void Start();
 
-    // Returns the Highway map
-    std::map<int, ns3::Ptr<ns3::Highway> > getHighways();
+  // Returns the Highway map
+  std::map<int, ns3::Ptr<ns3::Highway> > getHighways();
 
-    /**
-     * Below are the functions used for the net tracebacks
-     * Each callback has an enable function associated with it that
-     * allows for individual callbacks to be enabled
-     */
+  /**
+   * Below are the functions used for the net tracebacks
+   * Each callback has an enable function associated with it that
+   * allows for individual callbacks to be enabled
+   */
 
-    void VehicleReceive(ns3::Ptr<ns3::Vehicle> veh, ns3::Ptr<const ns3::Packet> p, ns3::Address add);
-    void EnableVehicleReceive();
+  void VehicleReceive(ns3::Ptr<ns3::Vehicle> veh, ns3::Ptr<const ns3::Packet> p, ns3::Address add);
+  void SetVehicleReceiveCallback(VehicleReceiveCallback vehRecCallback);
+  void EnableVehicleReceive();
 
-    void DeviceTrace(ns3::Ptr<ns3::Vehicle> veh, string context, ns3::Ptr<const ns3::Packet> p);
-    void EnableDeviceTrace();
+  void DeviceTrace(ns3::Ptr<ns3::Vehicle> veh, string context, ns3::Ptr<const ns3::Packet> p);
+  void EnableDeviceTrace();
 
-    void PhyRxOkTrace(ns3::Ptr<ns3::Vehicle> veh, string context, ns3::Ptr<const ns3::Packet> p, double snr, ns3::WifiMode mode, enum ns3::WifiPreamble preamble);
-    void EnablePhyRxOkTrace();
+  void PhyRxOkTrace(ns3::Ptr<ns3::Vehicle> veh, string context, ns3::Ptr<const ns3::Packet> p, double snr, ns3::WifiMode mode, enum ns3::WifiPreamble preamble);
+  void EnablePhyRxOkTrace();
 
-    void PhyRxErrorTrace(ns3::Ptr<ns3::Vehicle> veh, std::string context, ns3::Ptr<const ns3::Packet> packet, double snr);
-    void EnablePhyRxErrorTrace();
+  void PhyRxErrorTrace(ns3::Ptr<ns3::Vehicle> veh, std::string context, ns3::Ptr<const ns3::Packet> packet, double snr);
+  void EnablePhyRxErrorTrace();
 
-    void PhyTxTrace(ns3::Ptr<ns3::Vehicle> veh, std::string context, ns3::Ptr<const ns3::Packet> packet, ns3::WifiMode mode, ns3::WifiPreamble preamble, uint8_t txPower);
-    void EnablePhyTxTrace();
+  void PhyTxTrace(ns3::Ptr<ns3::Vehicle> veh, std::string context, ns3::Ptr<const ns3::Packet> packet, ns3::WifiMode mode, ns3::WifiPreamble preamble, uint8_t txPower);
+  void EnablePhyTxTrace();
 
-    void PhyStateTrace(ns3::Ptr<ns3::Vehicle> veh, std::string context, ns3::Time start, ns3::Time duration, enum ns3::WifiPhy::State state);
-    void EnablePhyStateTrace();
+  void PhyStateTrace(ns3::Ptr<ns3::Vehicle> veh, std::string context, ns3::Time start, ns3::Time duration, enum ns3::WifiPhy::State state);
+  void EnablePhyStateTrace();
 
-    void SetVehicleControlCallback(Callback<bool, Ptr<Highway>, Ptr<Vehicle>, double> controllCallback);
+  void SetVehicleControlCallback(Callback<bool, Ptr<Highway>, Ptr<Vehicle>, double> controllCallback);
 
-    // Calls the next step on the simulation
-    static void Step(HighwayProject* project);
+  // Calls the next step on the simulation
+  static void Step(HighwayProject* project);
 
 };
 

@@ -272,10 +272,18 @@ void HighwayProject::VehicleReceive(ns3::Ptr<ns3::Vehicle> veh, ns3::Ptr<const n
     m_netTrace << Simulator::Now().GetNanoSeconds() << "," << veh->GetVehicleId() << ",Vehicle Receive,0" << endl;
 }
 
+void HighwayProject::SetVehicleReceiveCallback(VehicleReceiveCallback callback){
+  vehReceiveCallback = callback;
+}
+
 void HighwayProject::EnableVehicleReceive() {
-    for(list<Ptr<VehicleGenerator> >::iterator it = m_vehGens.begin(); it != m_vehGens.end(); it++) {
-        (*it)->SetReceiveDataCallback(MakeCallback(&HighwayProject::VehicleReceive, this));
-    }
+  
+  if(vehReceiveCallback.IsNull())
+    vehReceiveCallback = MakeCallback(&HighwayProject::VehicleReceive, this);
+  
+  for(list<Ptr<VehicleGenerator> >::iterator it = m_vehGens.begin(); it != m_vehGens.end(); it++) {
+    (*it)->SetReceiveDataCallback(vehReceiveCallback);
+  }
 }
 
 
