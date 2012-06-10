@@ -36,6 +36,7 @@
 #include "ns3/wifi-module.h"
 #include "Model.h"
 #include "LaneChange.h"
+#include "VehicleState.h"
 #include <list>
 
 namespace ns3 {
@@ -99,6 +100,8 @@ namespace ns3 {
         /// Catching PhyStateTrace.
         PhyStateTraceCallback m_phyStateTrace;
 
+      /// Representation of Vehicle's internal state and knowledge of network.
+      VehicleState m_vehState;
     public:
 
         /// Override TypeId.

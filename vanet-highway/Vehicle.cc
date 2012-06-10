@@ -100,6 +100,14 @@ namespace ns3 {
         m_device->SetReceiveCallback(MakeCallback(&Vehicle::ReceivePacket, this));
     }
 
+  /**
+   * Returns a pointer to the Vehicle's VehicleState object.
+   *
+   */
+  VehicleState * Vehicle::GetVehicleState() {
+    return & m_vehState;
+  }
+
     /**
      * Returns the vehicle type
      * 0 = vehicle, 1 = obstacle, 2 = traffic light
