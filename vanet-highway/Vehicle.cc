@@ -34,13 +34,28 @@ namespace ns3 {
         return tid;
     }
 
+  vector<Ptr<Node> > * Vehicle::nodes_vector;
+
+  void Vehicle::init_nodes() {
+    Vehicle::nodes_vector = new vector<Ptr<Node> >;
+
+    for (int i = 0; i < 500; i++) {
+      Ptr<Node> temp = CreateObject<Node>();
+      MobilityHelper mobility;
+      mobility.Install(temp);
+      Vehicle::nodes_vector->push_back(temp);
+    }
+  }
+
     /*
      * The only constructor
      */
     Vehicle::Vehicle() {
-        m_node = CreateObject<Node > ();
-        MobilityHelper mobility;
-        mobility.Install(m_node);
+        // m_node = CreateObject<Node > ();
+        // MobilityHelper mobility;
+        // mobility.Install(m_node);
+      m_node = Vehicle::nodes_vector->at(nodes_vector->size() - 1);
+      Vehicle::nodes_vector->pop_back();
         m_vehicleId = 1;
         m_lane = 0;
         m_direction = 0;
@@ -58,6 +73,7 @@ namespace ns3 {
      * Empty destructor
      */
     Vehicle::~Vehicle() {
+      Vehicle::nodes_vector->push_back(m_node);
     }
 
     /*

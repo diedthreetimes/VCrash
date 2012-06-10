@@ -16,3 +16,4 @@ build
 .lock-wafbuild
 
 *.sqlite
+*\#*

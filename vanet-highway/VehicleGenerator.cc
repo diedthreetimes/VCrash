@@ -223,33 +223,33 @@ namespace ns3 {
                 temp->SetLaneChange(CreateSedanLaneChangeModel());
                 temp->SetLength(4);
                 temp->SetWidth(2);
-            } else {
-                Ptr<Model> tempModel = CreateTruckModel();
+             } else {
+                 Ptr<Model> tempModel = CreateTruckModel();
                 tempModel->SetDesiredVelocity(m_RVSpeed.GetValue());
-                temp->SetModel(tempModel);
-                temp->SetLaneChange(CreateTruckLaneChangeModel());
-                temp->SetLength(8);
-                temp->SetWidth(2);
-            }
+                 temp->SetModel(tempModel);
+                 temp->SetLaneChange(CreateTruckLaneChangeModel());
+                 temp->SetLength(8);
+                 temp->SetWidth(2);
+             }
 
-            // Determine what destination we are going to
-            int destination = -1;
-            // Get the destinatio probablity value range [0,1)
-            double destVal = uRnd3.GetValue();
-            for (std::map<double, int>::iterator it = m_destinationMap.begin(); it != m_destinationMap.end(); it++) {
-                // Set the destination
-                destination = it->second;
-                // If we have gotten to where we need to be in
-                // the map
-                if (destVal < it->first) {
-                    // Stop the search
-                    break;
-                }
-            }
-            // Set the destination.  A destination of -1 will not harm the
-            // simulation.  Highway handles unkown destinations by defaulting
-            // to STRAIGHT
-            temp->AddDestination(destination);
+             // Determine what destination we are going to
+             int destination = -1;
+             // Get the destinatio probablity value range [0,1)
+             double destVal = uRnd3.GetValue();
+             for (std::map<double, int>::iterator it = m_destinationMap.begin(); it != m_destinationMap.end(); it++) {
+                 // Set the destination
+                 destination = it->second;
+                 // If we have gotten to where we need to be in
+                 // the map
+                 if (destVal < it->first) {
+                     // Stop the search
+                     break;
+                 }
+             }
+             // Set the destination.  A destination of -1 will not harm the
+             // simulation.  Highway handles unkown destinations by defaulting
+             // to STRAIGHT
+             temp->AddDestination(destination);
 
             // Add the vehicle to the beginning of the highway
             m_highway->AddVehicleToBeginning(temp);
@@ -257,7 +257,7 @@ namespace ns3 {
             m_currentLane++;
             // Reset the lane to 0 once we are done
             if (m_currentLane > m_highway->GetNumberOfLanes()) {
-                m_currentLane = 1;
+                 m_currentLane = 1;
             }
         }
 

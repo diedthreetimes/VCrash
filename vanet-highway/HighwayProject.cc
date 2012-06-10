@@ -348,6 +348,8 @@ void HighwayProject::SetNetTraceFile(string fileName) {
 }
 
 void HighwayProject::Start() {
+  Vehicle::init_nodes();
+
     m_vehTrace.open(m_vehTraceFileName.c_str());
     m_netTrace.open(m_netTraceFileName.c_str());
     for(list<Ptr<VehicleGenerator> >::iterator it = m_vehGens.begin(); it != m_vehGens.end(); it++) {
