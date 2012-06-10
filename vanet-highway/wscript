@@ -1,7 +1,7 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 def build(bld):    
-    obj = bld.create_ns3_program('vanet-highway-test', ['core', 'mobility', 'wifi', 'visualizer'])
+    obj = bld.create_ns3_program('vanet-highway-test', ['core', 'mobility', 'wifi'])
     obj.source = [
   'tinyxml.cpp',
   'tinyxmlerror.cpp',
@@ -19,6 +19,24 @@ def build(bld):
   'TrafficLightGenerator.cc',
   'VehicleGenerator.cc',
 	]
-
-
+    
+    obj2 = bld.create_ns3_program('vcrash-sim', ['core', 'mobility', 'wifi'])
+    obj2.source = [
+  'tinyxml.cpp',
+  'tinyxmlerror.cpp',
+  'tinyxmlparser.cpp',
+  'tinystr.cpp',
+  'HighwayProject.cc',
+	'vcrash-sim.cc',
+  'Geometry.cc',
+	'Highway.cc',
+	'Vehicle.cc',
+	'Obstacle.cc',
+	'Model.cc',
+	'LaneChange.cc',
+  'IdGenerator.cc',
+  'TrafficLightGenerator.cc',
+  'VehicleGenerator.cc',
+	]
+    
 

@@ -689,6 +689,7 @@ def build(bld):
 
     # process subfolders from here
     bld.add_subdirs('src')
+    bld.add_subdirs('vanet-highway')
 
     # If modules have been enabled, then set lists of enabled modules
     # and enabled module test libraries.
