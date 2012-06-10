@@ -36,8 +36,8 @@
 #include "ns3/wifi-module.h"
 #include "Model.h"
 #include "LaneChange.h"
-#include "VehicleState.h"
 #include <list>
+#include "VehicleState.h"
 
 namespace ns3 {
     class LaneChange;
@@ -265,6 +265,8 @@ namespace ns3 {
          * \returns true if the change of the lane is possible for the Vehicle.
          */
         virtual bool CheckLaneChange(Ptr<Vehicle> frontOld, double distanceFOld, Ptr<Vehicle> frontNew, double distanceFNew, Ptr<Vehicle> backNew, double distanceBNew, bool toLeft);
+
+        VehicleState * GetVehicleState();
         /**
          * \return the Wifi address of the Vehicle.
          *
@@ -333,3 +335,4 @@ namespace ns3 {
     };
 };
 #endif
+

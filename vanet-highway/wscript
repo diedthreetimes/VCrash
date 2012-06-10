@@ -37,6 +37,7 @@ def build(bld):
   'IdGenerator.cc',
   'TrafficLightGenerator.cc',
   'VehicleGenerator.cc',
+  'VehicleState.cc'
 	]
     
 

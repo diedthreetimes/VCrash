@@ -43,6 +43,7 @@
 #include "HighwayXml.h"
 #include "WifiConfigurationXml.h"
 #include "HighwayProject.h"
+#include "VehicleState.h"
 
 NS_LOG_COMPONENT_DEFINE("VCrash");
 
@@ -87,42 +88,12 @@ using namespace std;
 */
 //static int msgCounter = 0;
 
-static int vehicleCrashId = 10;
-static Time vehicleCrashTime = Seconds(20.0);
-
 static void vehicleReceive(Ptr<Vehicle> veh, Ptr<const Packet> pac, Address adr){
-  printf("I am crying inside: %i\n", veh->GetVehicleId());
-  //printf("What is my adr? %i", adr); 
+  veh->GetVehicleState()->receive(&(*veh),pac,adr);  
 }
 
 static bool controlVehicle(Ptr<Highway> highway, Ptr<Vehicle> veh, double dt) {
-  if( veh->GetVehicleId()==vehicleCrashId && Simulator::Now()==vehicleCrashTime ) {
-    stringstream msg;
-    msg << "I hate you so so much: ";
-    msg << Simulator::Now().GetMicroSeconds() << std::endl;
-
-
-    std::cout << msg.str() << std::endl;
-    Ptr<Packet> packet = Create<Packet>((uint8_t*) msg.str().c_str(), msg.str().length());
-    
-    veh->SendTo(veh->GetBroadcastAddress(), packet);
-  }
-  //if(true){
-  /*if ((msgCounter == 499)) {
-    // if ((veh->GetVehicleId() == 1) && (msgCounter == 499)) {
-    stringstream msg;
-    msg << veh->GetVehicleId() 
-        << " x=" << veh->GetPosition().x 
-        << " y=" << veh->GetPosition().y
-        << " v=" << veh->GetVelocity()
-        << " d=" << veh->GetDirection()
-        << " l=" << veh->GetLane();
-    
-    Ptr<Packet> packet = Create<Packet>((uint8_t*) msg.str().c_str(), msg.str().length());
-    
-    veh->SendTo(veh->GetBroadcastAddress(), packet);
-  }
-  msgCounter = (msgCounter + 1)%500;*/
+  veh->GetVehicleState()->send(&(*veh));
   return false;
 }
 
@@ -195,9 +166,6 @@ int main(int argc, char *argv[]) {
   Ptr<Highway> highway = project.getHighways()[0];
   //Simulator::Schedule(Seconds(10), &addCustomVehicle, highway);
   project.SetVehicleControlCallback(MakeCallback(&controlVehicle));
-
-  NS_LOG_INFO ("Hey this is a print");
-
   
   project.Start();
 
