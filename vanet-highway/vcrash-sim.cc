@@ -87,8 +87,8 @@ using namespace std;
 */
 //static int msgCounter = 0;
 
-static int vehicleCrashId = 1;
-static Time vehicleCrashTime = Seconds(7.0);
+static int vehicleCrashId = 10;
+static Time vehicleCrashTime = Seconds(20.0);
 
 static void vehicleReceive(Ptr<Vehicle> veh, Ptr<const Packet> pac, Address adr){
   printf("I am crying inside: %i\n", veh->GetVehicleId());
@@ -96,20 +96,13 @@ static void vehicleReceive(Ptr<Vehicle> veh, Ptr<const Packet> pac, Address adr)
 }
 
 static bool controlVehicle(Ptr<Highway> highway, Ptr<Vehicle> veh, double dt) {
-  if( Simulator::Now() < Seconds(2) ) {
-    std::cout << "ID: " << veh->GetVehicleId() << std::endl <<
-      "Time: " <<  Simulator::Now().GetMilliSeconds() << std::endl;
-  }
   if( veh->GetVehicleId()==vehicleCrashId && Simulator::Now()==vehicleCrashTime ) {
     stringstream msg;
     msg << "I hate you so so much: ";
     msg << Simulator::Now().GetMicroSeconds() << std::endl;
-    msg << veh->GetPosition().y << std::endl;
-    msg << veh->GetPosition().x << std::endl;
-    msg << dt;
+
 
     std::cout << msg.str() << std::endl;
-    printf("I just sent a packet\n");
     Ptr<Packet> packet = Create<Packet>((uint8_t*) msg.str().c_str(), msg.str().length());
     
     veh->SendTo(veh->GetBroadcastAddress(), packet);

@@ -1015,7 +1015,10 @@ namespace ns3 {
                 //Check the controling status
                 bool controled = false;
                 if (!m_controlVehicle.IsNull()) {
-                    controled = m_controlVehicle(Ptr<Highway > (this), veh, dt);
+                  // SKYF: This callback is overloaded for sending messages, and was being called twice
+                  //  Uncomment and fix the bug in order to take control of acceleration
+                  controled = false;//m_controlVehicle(Ptr<Highway > (this), veh, dt);
+                  //**********************************************************************************//
                 }
                 if (controled == false) {
                     //We will be modifying the speed if the vehicle is supposed to be
