@@ -1,7 +1,9 @@
 #include "VehicleState.h"
 
+// using namespace ns3;
+
 namespace ns3 {
-  void VehicleState::receive(Vehicle * veh, Ptr<const Packet> pac, Address adr){
+  void VehicleState::receive(Vehicle * veh, ns3::Ptr<const Packet> pac, Address adr){
         vcrash_message msg;
       pac->CopyData((uint8_t *) &msg, sizeof(msg));
   

@@ -5,8 +5,10 @@
 #include "ns3/core-module.h"
 #include "ns3/ptr.h"
 #include "ns3/address.h"
+#include "ns3/packet.h"
 
 namespace ns3 {
+
   class Vehicle;
 
   class VehicleState{
@@ -24,4 +26,6 @@ namespace ns3 {
   };
   
 }
+
+#include "Vehicle.h"
 #endif
