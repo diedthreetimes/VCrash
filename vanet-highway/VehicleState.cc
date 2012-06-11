@@ -41,14 +41,6 @@ namespace ns3 {
 
   void VehicleState::send(Vehicle * veh) {
     if( veh->GetVehicleId()==vehicleCrashId && Simulator::Now()==vehicleCrashTime ) {
-      /*stringstream msg;
-	msg << "I hate you so so much: ";
-	msg << Simulator::Now().GetMicroSeconds() << std::endl;
-
-
-	std::cout << msg.str() << std::endl;
-	Ptr<Packet> packet = Create<Packet>((uint8_t*) msg.str().c_str(), msg.str().length());
-      */
       vcrash_message msg;
       msg.ttl = 10;
       msg.broadcastId = m_broadcastId++;
@@ -81,7 +73,7 @@ namespace ns3 {
   }
 
   int VehicleState::vehicleCrashId = 4;
-  Time VehicleState::vehicleCrashTime = Seconds(32.0);
+  Time VehicleState::vehicleCrashTime = Seconds(15.0);
   bool VehicleState::trace_enabled = false;
   std::ofstream VehicleState::trace_file;
 }

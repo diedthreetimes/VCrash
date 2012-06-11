@@ -22,7 +22,7 @@
 // Number of nodes created for a pool from which each Vehicle will pull from when created
 // and release to when destroyed.  Useful for visualizing nodes with Pyviz. Make sure this
 // value is >= the maximum number of vehicles you expect to have during a simulation!
-#define NUM_NODES 100
+#define NUM_NODES 300
 
 #include "Vehicle.h"
 #include "Geometry.h"
@@ -107,7 +107,7 @@ namespace ns3 {
 
   void Vehicle::WifiCallbacks(){
     NetDeviceContainer d(m_node->GetDevice(0));
-    
+
     // Use this for concatenating strings
     std::ostringstream oss;
 

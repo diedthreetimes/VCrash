@@ -189,9 +189,9 @@ namespace ns3 {
             Ptr<Vehicle> temp = CreateObject<Vehicle > ();
             // Use uRnd2 to determine if it is equipped with WIF
             if (uRnd2.GetValue() <= m_penetrationRate) {
-                // Setup the wifi
+              // Setup the wifi
                 temp->IsEquipped = true;
-
+                
                 // Commented out to use node pools -skyf
                 temp->WifiCallbacks();
                 // temp->SetupWifi(m_wifiHelper, m_wifiPhyHelper, m_wifiMacHelper);
@@ -267,7 +267,7 @@ namespace ns3 {
               m_currentLane = 1;
             }
         }
-
+        
         // Schecule the next run
         Simulator::Schedule(Seconds(m_dt), &VehicleGenerator::Step, Ptr<VehicleGenerator > (this));
     }
