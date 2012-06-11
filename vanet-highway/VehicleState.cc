@@ -133,6 +133,16 @@ namespace ns3{
   bool VehicleState::inDistance(Vehicle *veh, double x, double y){
     double dx = veh->GetPosition().x - x;
     double dy = veh->GetPosition().y - y;
+
+    double tan1 = dy/dx;
+    double tan2 = tan(veh->GetDirection());
+    double dtan = tan1 - tan2;
+    int sign = (tan1 < tan2 ? -1 : +1);
+    double theta = atan((sign * dtan) / (1 - (tan1 * tan2))) * 180 / 3.14159; // Use Math.pi;
+    if (theta > 90)
+      return false;
+
+
     if (sqrt((dx * dx) + (dy * dy)) < VehicleState::seeing_distance){
       return true;
     }
