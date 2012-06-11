@@ -8,22 +8,18 @@
 #include "ns3/packet.h"
 #include <set>
 #include <vector>
-
+#include <iostream>
+#include <fstream>
+#include <string>
 
 namespace ns3 {
 
   class Vehicle;
 
   class VehicleState{
-    
-  private:
-    int m_broadcastId;
-    std::set<uint64_t> m_messageHash;
-    std::vector<EventId> activeEvents;
   public:
     static int vehicleCrashId;
-    static Time vehicleCrashTime;
-    
+    static Time vehicleCrashTime;    
 
     struct vcrash_message {
       int ttl;
@@ -42,6 +38,18 @@ namespace ns3 {
     void receive(Vehicle * veh, Ptr<const Packet> pac, Address adr);
     void send(Vehicle *veh);
     static void broadcast(vcrash_message msg, Vehicle *veh);
+    static void SetTraceFile(std::string filename);
+    static void CloseTraceFile();
+
+  private:
+    int m_broadcastId;
+    std::set<uint64_t> m_messageHash;
+    pthread_t broadcast_thread;
+    std::vector<EventId> activeEvents;
+
+    static std::ofstream trace_file;
+    static bool trace_enabled;
+    static void print_trace(std::string label, vcrash_message msg, Vehicle * veh);
   };
   
 }

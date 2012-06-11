@@ -13,57 +13,75 @@ namespace ns3 {
     return ret;
   }
   
-   void VehicleState::broadcast(vcrash_message msg, Vehicle *veh){
-     
-	Ptr<Packet> packet = Create<Packet>((uint8_t*) &msg, sizeof(vcrash_message) ); // Magic = true for serialization
-	veh->SendTo(veh->GetBroadcastAddress(), packet);
-	printf("Packet forwarded. TTL: %i, ID: %i, T: %lld\n", msg.ttl, veh->GetVehicleId(), Simulator::Now().GetNanoSeconds());		
+  void VehicleState::broadcast(vcrash_message msg, Vehicle *veh){
+    Ptr<Packet> packet = Create<Packet>((uint8_t*) &msg, sizeof(vcrash_message) ); // Magic = true for serialization
+    veh->SendTo(veh->GetBroadcastAddress(), packet);
+    print_trace("Packet forwarded.",msg,veh);
   }
-  void VehicleState::receive(Vehicle * veh, ns3::Ptr<const Packet> pac, Address adr){
-        vcrash_message msg;
-      pac->CopyData((uint8_t *) &msg, sizeof(msg));
-  
-      if(m_messageHash.find(messageUID(msg)) == m_messageHash.end()){
-	m_messageHash.insert(messageUID(msg));
-	if(msg.ttl > 1){
-	  msg.ttl--;
 
-	  broadcast(msg, veh);
-	  for(int i = 0; i < 5; i++){
-	    activeEvents.push_back(Simulator::Schedule(Seconds(i + 1), broadcast, msg, veh)); 
-	  }
+  void VehicleState::receive(Vehicle * veh, ns3::Ptr<const Packet> pac, Address adr){
+    vcrash_message msg;
+    pac->CopyData((uint8_t *) &msg, sizeof(msg));
+  
+    if(m_messageHash.find(messageUID(msg)) == m_messageHash.end()){
+      m_messageHash.insert(messageUID(msg));
+      if(msg.ttl > 1){
+	msg.ttl--;
+
+	broadcast(msg, veh);
+	for(int i = 0; i < 5; i++){
+	  activeEvents.push_back(Simulator::Schedule(Seconds(i + 1), broadcast, msg, veh)); 
 	}
       }
-      else{
-	printf("I'm ignoring a packet %i.\n", veh->GetVehicleId());
-      }
+    }
+    else{
+      print_trace("Ignoring packet.", msg, veh);
+    }
   }
 
   void VehicleState::send(Vehicle * veh) {
-      if( veh->GetVehicleId()==vehicleCrashId && Simulator::Now()==vehicleCrashTime ) {
-	/*stringstream msg;
-	  msg << "I hate you so so much: ";
-	  msg << Simulator::Now().GetMicroSeconds() << std::endl;
+    if( veh->GetVehicleId()==vehicleCrashId && Simulator::Now()==vehicleCrashTime ) {
+      /*stringstream msg;
+	msg << "I hate you so so much: ";
+	msg << Simulator::Now().GetMicroSeconds() << std::endl;
 
 
-	  std::cout << msg.str() << std::endl;
-	  Ptr<Packet> packet = Create<Packet>((uint8_t*) msg.str().c_str(), msg.str().length());
-	*/
-	vcrash_message msg;
-	msg.ttl = 10;
-	msg.broadcastId = m_broadcastId++;
-	msg.vehId = veh->GetVehicleId();
+	std::cout << msg.str() << std::endl;
+	Ptr<Packet> packet = Create<Packet>((uint8_t*) msg.str().c_str(), msg.str().length());
+      */
+      vcrash_message msg;
+      msg.ttl = 10;
+      msg.broadcastId = m_broadcastId++;
+      msg.vehId = veh->GetVehicleId();
     
-	m_messageHash.insert(messageUID(msg));
-	printf("Packet created. TTL: %i, ID: %i, T: %lld\n", msg.ttl, veh->GetVehicleId(), Simulator::Now().GetNanoSeconds());
+      m_messageHash.insert(messageUID(msg));
+      print_trace("Packet created.", msg, veh);
 
-	Ptr<Packet> packet = Create<Packet>((uint8_t*) &msg, sizeof(vcrash_message) ); // Magic = true for serialization
-	veh->SendTo(veh->GetBroadcastAddress(), packet);
-      }
-
+      Ptr<Packet> packet = Create<Packet>((uint8_t*) &msg, sizeof(vcrash_message) ); // Magic = true for serialization
+      veh->SendTo(veh->GetBroadcastAddress(), packet);
     }
 
-  int VehicleState::vehicleCrashId = 4;
-  Time VehicleState::vehicleCrashTime= Seconds(32.0);
+  }
 
+  void VehicleState::print_trace(string label, vcrash_message msg, Vehicle * veh) {
+    if (trace_enabled) {
+      trace_file << label << " TTL: " << msg.ttl 
+		 << " ID: " <<  veh->GetVehicleId()
+		 <<  " T: " << Simulator::Now().GetNanoSeconds() <<std::endl;
+    }
+  }
+
+  void VehicleState::SetTraceFile(string filename) {
+    VehicleState::trace_enabled = true;
+    trace_file.open(filename.c_str());
+  }
+
+  void VehicleState::CloseTraceFile() {
+    trace_file.close();
+  }
+
+  int VehicleState::vehicleCrashId = 4;
+  Time VehicleState::vehicleCrashTime = Seconds(32.0);
+  bool VehicleState::trace_enabled = false;
+  std::ofstream VehicleState::trace_file;
 }

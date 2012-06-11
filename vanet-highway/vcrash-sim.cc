@@ -141,7 +141,7 @@ int main(int argc, char *argv[]) {
   // Load config options
   HighwayProject project(xml);
   project.SetVehTraceFile(vehicleTraceFile);
-  project.SetNetTraceFile(networkTraceFile);
+  //project.SetNetTraceFile(networkTraceFile); //project traces aren't very useful...
   if(enableVehicleReceive) {
     project.SetVehicleReceiveCallback(MakeCallback(&vehicleReceive)); 
     project.EnableVehicleReceive();
@@ -162,15 +162,19 @@ int main(int argc, char *argv[]) {
     project.EnablePhyStateTrace();
   }
     
-  // Configure a control vehicle
+  // Configure a vehicle control
   Ptr<Highway> highway = project.getHighways()[0];
   //Simulator::Schedule(Seconds(10), &addCustomVehicle, highway);
   project.SetVehicleControlCallback(MakeCallback(&controlVehicle));
   
+  VehicleState::SetTraceFile(networkTraceFile);
+
   project.Start();
 
   Simulator::Run();
   Simulator::Destroy();
+
+  VehicleState::CloseTraceFile();
 
   return 0;
 }
