@@ -18,3 +18,8 @@ build
 *.sqlite
 
 *Trace.csv
+
+
+# emacs files
+*~
+\#*
