@@ -20,6 +20,7 @@ namespace ns3 {
     int m_broadcastId;
     std::set<uint64_t> m_messageHash;
     pthread_t broadcast_thread;
+    std::vector<EventId> activeEvents;
   public:
     static int vehicleCrashId;
     static Time vehicleCrashTime;
@@ -33,6 +34,10 @@ namespace ns3 {
     
     VehicleState(){
       m_broadcastId = 0;
+    }
+    ~VehicleState(){
+       for(unsigned int i=0; i < activeEvents.size(); i++)
+	 Simulator::Cancel(activeEvents.at(i));
     }
     
     void receive(Vehicle * veh, Ptr<const Packet> pac, Address adr);

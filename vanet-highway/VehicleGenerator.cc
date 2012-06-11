@@ -158,12 +158,12 @@ namespace ns3 {
         // The gap to the previous vehicle in the lane
         double gap;
         // The velocity the vehicle starts at
-
+        
         // Use uRnd to determine if we are a truck
         bool isSedan = uRnd.GetValue() <= m_truckProability;
         // Get the default lengths
         int length = isSedan ? 4 : 8;
-        double vel = m_lowVelocity;
+        double vel = m_RVSpeed.GetValue();
 
         // Get the first vehicle in the current lane
         Ptr<Vehicle> last = m_highway->GetFirstVehicle(m_currentLane);
@@ -254,10 +254,11 @@ namespace ns3 {
             // Add the vehicle to the beginning of the highway
             m_highway->AddVehicleToBeginning(temp);
             // We need to put vehicles in other lanes
+
             m_currentLane++;
             // Reset the lane to 0 once we are done
             if (m_currentLane > m_highway->GetNumberOfLanes()) {
-                m_currentLane = 1;
+              m_currentLane = 1;
             }
         }
 
@@ -280,18 +281,21 @@ namespace ns3 {
     // Sets the lower end of the uniform velocity distribution
     void VehicleGenerator::SetLowVelocity(double lowVelocity) {
         m_lowVelocity = lowVelocity;
-        m_RVSpeed = UniformVariable(m_lowVelocity, m_highVelocity);
+        double mean = (m_highVelocity + m_lowVelocity)/2;
+        m_RVSpeed = NormalVariable(mean,3*(m_highVelocity-mean));
     }
 
     // Gets the lower end of the uniform velocity distribution
     double VehicleGenerator::GetLowVelocity() {
-        return m_lowVelocity;
+      return m_lowVelocity;
     }
 
     // Sets the higher end of the uniform velocity distribution
     void VehicleGenerator::SetHighVelocity(double highVelocity) {
         m_highVelocity = highVelocity;
-        m_RVSpeed = UniformVariable(m_lowVelocity, m_highVelocity);
+        
+        double mean = (m_highVelocity + m_lowVelocity)/2;
+        m_RVSpeed = NormalVariable(mean,3*(m_highVelocity-mean));
     }
 
     // Gets the higher end of the uniform velocity distribution

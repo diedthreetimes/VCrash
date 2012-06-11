@@ -9,10 +9,10 @@
   </wifiConfigurations>
   <vehicleGenerators>
     <vehicleGenerator highwayId="0" wifiConfigId="1" flow="0.5" 
-    lowVelocity="20.2" highVelocity="40.2" minGap="0.0" 
+    lowVelocity="25.0" highVelocity="45.0" minGap="5.0" 
     penetrationRate="100.0" />
     <vehicleGenerator highwayId="1" wifiConfigId="1" flow="0.5" 
-    lowVelocity="20.2" highVelocity="40.2" minGap="0.0" 
+    lowVelocity="25.0" highVelocity="45.0" minGap="5.0" 
     penetrationRate="100.0" />
   </vehicleGenerators>
 
