@@ -19,12 +19,16 @@ namespace ns3 {
   class VehicleState{
   public:
     static int vehicleCrashId;
-    static Time vehicleCrashTime;    
+    static Time vehicleCrashTime;
+    static double seeing_distance;
 
     struct vcrash_message {
+      int type;
       int ttl;
       int broadcastId;
       int vehId;
+      double position_x;
+      double position_y;
     };// __attribute__(packed) ;
     
     VehicleState(){
@@ -36,6 +40,7 @@ namespace ns3 {
     }
     
     void receive(Vehicle * veh, Ptr<const Packet> pac, Address adr);
+    bool inDistance(Vehicle *veh, double x, double y);
     void send(Vehicle *veh);
     static void broadcast(vcrash_message msg, Vehicle *veh);
     static void SetTraceFile(std::string filename);

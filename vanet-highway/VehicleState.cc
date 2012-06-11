@@ -22,12 +22,20 @@ namespace ns3 {
   void VehicleState::receive(Vehicle * veh, ns3::Ptr<const Packet> pac, Address adr){
     vcrash_message msg;
     pac->CopyData((uint8_t *) &msg, sizeof(msg));
-  
+    
     if(m_messageHash.find(messageUID(msg)) == m_messageHash.end()){
       m_messageHash.insert(messageUID(msg));
+      if(msg.type == 1){
+	if (inDistance(veh, msg.position_x, msg.position_y) == true)
+	  msg.type = 2;
+	}
+      else{
+	msg.type = 3;
+      }
+
       if(msg.ttl > 1){
 	msg.ttl--;
-
+	
 	broadcast(msg, veh);
 	for(int i = 0; i < 5; i++){
 	  activeEvents.push_back(Simulator::Schedule(Seconds(i + 1), broadcast, msg, veh)); 
@@ -39,12 +47,26 @@ namespace ns3 {
     }
   }
 
+  bool VehicleState::inDistance(Vehicle *veh, double x, double y){
+    double dx = veh->GetPosition().x - x;
+    double dy = veh->GetPosition().y - y;
+    if (sqrt((dx * dx) + (dy * dy)) < VehicleState::seeing_distance){
+      return true;
+    }
+    else{
+      return false;
+    }
+  }
+  
   void VehicleState::send(Vehicle * veh) {
     if( veh->GetVehicleId()==vehicleCrashId && Simulator::Now()==vehicleCrashTime ) {
       vcrash_message msg;
+      msg.type = 1;
       msg.ttl = 10;
       msg.broadcastId = m_broadcastId++;
       msg.vehId = veh->GetVehicleId();
+      msg.position_x = veh->GetPosition().x;
+      msg.position_y = veh->GetPosition().y;
     
       m_messageHash.insert(messageUID(msg));
       print_trace("Packet created.", msg, veh);
@@ -74,6 +96,7 @@ namespace ns3 {
 
   int VehicleState::vehicleCrashId = 4;
   Time VehicleState::vehicleCrashTime = Seconds(15.0);
+  double VehicleState::seeing_distance = 10;
   bool VehicleState::trace_enabled = false;
   std::ofstream VehicleState::trace_file;
 }
