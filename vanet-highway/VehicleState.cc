@@ -14,10 +14,10 @@ namespace ns3 {
   }
   
   
-   void VehicleState::broadcast(vcrash_message *msg, Vehicle *veh){
+   void VehicleState::broadcast(vcrash_message msg, Vehicle *veh){
 	Ptr<Packet> packet = Create<Packet>((uint8_t*) &msg, sizeof(vcrash_message) ); // Magic = true for serialization
 	veh->SendTo(veh->GetBroadcastAddress(), packet);
-	  		
+	printf("Packet forwarded. TTL: %i, ID: %i, T: %ld\n", msg.ttl, veh->GetVehicleId(), Simulator::Now().GetNanoSeconds());		
   }
   void VehicleState::receive(Vehicle * veh, ns3::Ptr<const Packet> pac, Address adr){
         vcrash_message msg;
@@ -27,13 +27,10 @@ namespace ns3 {
 	m_messageHash.insert(messageUID(msg));
 	if(msg.ttl > 1){
 	  msg.ttl--;
-	  printf("Packet forwarded. TTL: %i, ID: %i, T: %ld\n", msg.ttl, veh->GetVehicleId(), Simulator::Now().GetNanoSeconds());
-	  Ptr<Packet> packet = Create<Packet>((uint8_t*) &msg, sizeof(vcrash_message) ); // Magic = true for serialization
-	  veh->SendTo(veh->GetBroadcastAddress(), packet);
+
+	  broadcast(msg, veh);
 	  for(int i = 0; i < 5; i++){
-		  Time t = Simulator::Now() + Seconds(i + 1);
-		  
-		  Simulator::Schedule(t, broadcast, &msg, veh); 
+		  Simulator::Schedule(Seconds(i + 1), broadcast, msg, veh); 
 	  }
 	}
       }

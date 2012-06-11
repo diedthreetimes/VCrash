@@ -37,7 +37,7 @@ namespace ns3 {
     
     void receive(Vehicle * veh, Ptr<const Packet> pac, Address adr);
     void send(Vehicle *veh);
-    static void broadcast(vcrash_message *msg, Vehicle *veh);
+    static void broadcast(vcrash_message msg, Vehicle *veh);
   };
   
 }
