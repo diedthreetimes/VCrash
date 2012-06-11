@@ -70,18 +70,22 @@ namespace ns3 {
     
       m_messageHash.insert(messageUID(msg));
       print_trace("Packet created.", msg, veh);
-
+    
       Ptr<Packet> packet = Create<Packet>((uint8_t*) &msg, sizeof(vcrash_message) ); // Magic = true for serialization
       veh->SendTo(veh->GetBroadcastAddress(), packet);
+      
+      veh->SetVelocity(0);
+      veh->SetAcceleration(0);
+      veh->GetModel()->SetDesiredVelocity(0.1);
     }
 
   }
 
   void VehicleState::print_trace(string label, vcrash_message msg, Vehicle * veh) {
     if (trace_enabled) {
-      trace_file << label << " TTL: " << msg.ttl 
-		 << " ID: " <<  veh->GetVehicleId()
-		 <<  " T: " << Simulator::Now().GetNanoSeconds() <<std::endl;
+      trace_file << label <<  "$ T: " << Simulator::Now().GetNanoSeconds()
+		 << ", ID: " <<  veh->GetVehicleId()
+		 << ", TTL: " << msg.ttl <<std::endl;
     }
   }
 
@@ -97,6 +101,7 @@ namespace ns3 {
   int VehicleState::vehicleCrashId = 4;
   Time VehicleState::vehicleCrashTime = Seconds(15.0);
   double VehicleState::seeing_distance = 10;
+
   bool VehicleState::trace_enabled = false;
   std::ofstream VehicleState::trace_file;
 }

@@ -38,8 +38,7 @@
 #include "LaneChange.h"
 #include <list>
 #include "VehicleState.h"
-#include <vector>
-#include "ns3/node.h"
+
 namespace ns3 {
     class LaneChange;
     class Model;
@@ -104,8 +103,6 @@ namespace ns3 {
       /// Representation of Vehicle's internal state and knowledge of network.
       VehicleState m_vehState;
     public:
-        static vector<Ptr<Node> > * nodes_vector;
-        static void init_nodes();
 
         /// Override TypeId.
         static TypeId GetTypeId(void);
@@ -121,9 +118,7 @@ namespace ns3 {
          * Setups the Vehicle wifi given the appropriate helpers.
          * This function may need to be modified later if stable WAVE/DSRC standards added to ns-3.
          */
-      static bool Installed;
-        static void SetupWifi(const WifiHelper &wifi, const YansWifiPhyHelper &phy, const NqosWifiMacHelper &mac);
-        void WifiCallbacks();
+        void SetupWifi(const WifiHelper &wifi, const YansWifiPhyHelper &phy, const NqosWifiMacHelper &mac);
         /**
          * \returns the Vehicle Id.
          *

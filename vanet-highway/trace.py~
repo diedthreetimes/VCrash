@@ -1,0 +1,9 @@
+# File representing data contained in a single line of trace information.
+
+class Trace:
+
+    def __init__(line):
+        data = line.split('$')[1]
+        data = data.split(' ')
+        for d in 
+self.
