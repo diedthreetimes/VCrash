@@ -18,3 +18,5 @@ build
 *.sqlite
 
 *Trace.csv
+*\#*
+

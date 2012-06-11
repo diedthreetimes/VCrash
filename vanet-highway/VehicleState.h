@@ -19,7 +19,6 @@ namespace ns3 {
   private:
     int m_broadcastId;
     std::set<uint64_t> m_messageHash;
-    pthread_t broadcast_thread;
     std::vector<EventId> activeEvents;
   public:
     static int vehicleCrashId;
