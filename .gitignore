@@ -16,3 +16,5 @@ build
 .lock-wafbuild
 
 *.sqlite
+
+*Trace.csv
