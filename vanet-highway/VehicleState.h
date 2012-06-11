@@ -7,6 +7,8 @@
 #include "ns3/address.h"
 #include "ns3/packet.h"
 #include <set>
+#include <vector>
+
 
 namespace ns3 {
 
@@ -17,10 +19,11 @@ namespace ns3 {
   private:
     int m_broadcastId;
     std::set<uint64_t> m_messageHash;
-    
+    pthread_t broadcast_thread;
   public:
     static int vehicleCrashId;
     static Time vehicleCrashTime;
+    
 
     struct vcrash_message {
       int ttl;
@@ -31,9 +34,10 @@ namespace ns3 {
     VehicleState(){
       m_broadcastId = 0;
     }
-
+    
     void receive(Vehicle * veh, Ptr<const Packet> pac, Address adr);
     void send(Vehicle *veh);
+    static void broadcast(vcrash_message *msg, Vehicle *veh);
   };
   
 }
