@@ -11,6 +11,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include "ns3/random-variable.h"
 
 // number of witness addresses in the message
 #define MAGIC_NUMBER 5
@@ -25,7 +26,7 @@ namespace ns3 {
     static int vehicleCrashId;
     static Time vehicleCrashTime;
     static double seeing_distance;
-
+    static RandomVariable delayRV;
     // Message Types
     static const int MSG_VICTIM = 1;
     static const int MSG_SAW = 2;

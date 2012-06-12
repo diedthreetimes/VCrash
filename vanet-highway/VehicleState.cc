@@ -1,5 +1,7 @@
 #include "VehicleState.h"
 
+// Comment this to turn off random delay
+#define RANDOM_DELAY
 // using namespace ns3;
 
 namespace ns3{
@@ -117,8 +119,9 @@ namespace ns3{
 	m_crashMessages[crashId]=msg;
 	
 	broadcast(crashId, veh);
+	double delay = delayRV.GetValue();
 	for(int i = 0; i < MAGIC_NUMBER; i++){
-	  activeEvents.push_back(Simulator::Schedule(Seconds(i + 1), broadcast, crashId, veh)); 
+	  activeEvents.push_back(Simulator::Schedule(Seconds(i + delay + 0.5), broadcast, crashId, veh)); 
 	}
       }
       else{
@@ -193,4 +196,10 @@ namespace ns3{
 
   bool VehicleState::trace_enabled = false;
   std::ofstream VehicleState::trace_file;
+  
+  #ifdef RANDOM_DELAY
+    RandomVariable VehicleState::delayRV = UniformVariable(0.0,1.0);
+  #else
+    RandomVariable VehicleState::delayRV = UniformVariable(0.5,0.5);
+  #endif
 }
