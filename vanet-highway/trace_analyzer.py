@@ -18,8 +18,8 @@ def create_timesteps(msgs,resolution):
 #################      ARGUMENTS       ###########################################
 ##################################################################################
 
-parser = argparse.ArgumentParser(description='A helper script for analyzing VCrash traces and visualizing the data.',
-                                 formatter_class=argparse.RawTextHelpFormatter)
+parser = argparse.ArgumentParser(description='A helper script for analyzing VCrash traces and visualizing the data.\
+\nExample usage:  ./trace_analyzer.py -t ../networkTrace1.csv ../networkTrace2.csv --vehicles ../vehicleTrace1.csv ../vehicleTrace2.csv -l firstLabel secondLabel -p -n',formatter_class=argparse.RawTextHelpFormatter)
 parser.add_argument('--trace-files','-t', '--traces', nargs='+', default=['../networkTrace.csv'],metavar='trace_files',
                     help='file from which to read message trace data')
 parser.add_argument('--vehicle-files', '--vehicles', nargs='+', default=['../vehicleTrace.csv'],metavar='vehicle_files',
