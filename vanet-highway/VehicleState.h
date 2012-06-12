@@ -12,6 +12,7 @@
 #include <fstream>
 #include <string>
 #include "ns3/random-variable.h"
+#include <math.h>
 
 // number of witness addresses in the message
 #define MAGIC_NUMBER 5

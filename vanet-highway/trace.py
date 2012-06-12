@@ -1,6 +1,10 @@
 # File representing data contained in a single line of trace information.
 
-class DataTrace:
+from collections import namedtuple
+
+MessageTraceData = namedtuple('TraceData','all_msgs forwarded ignored created')
+
+class Message:
     field_delimeter = ': '
     label_delimeter = '$'
     data_delimeter = ','
@@ -20,11 +24,14 @@ class DataTrace:
             elif 'Ypos:' in d:
                 self.y = float(d.split(self.field_delimeter)[1])
 
-class VehicleTrace:
+    def __lt__(self,other):
+        return self.time < other.time
+
+class Vehicle:
     data_delimeter = ','
     
     def __init__(self,line):
         data = line.split(self.data_delimeter)
-        self.id = data[1]
+        self.id = int(data[1])
     
     
