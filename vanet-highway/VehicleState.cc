@@ -2,6 +2,15 @@
 
 // Comment this to turn off random delay
 #define RANDOM_DELAY
+// Uncomment to turn multiple observers on
+ #define OBSERVERS
+// Uncomment to turn aggregation on
+#define AGGREGATE
+// Uncomment to turn on repeats
+#define REPEATS
+
+// Comment out to turn on selective broadcasts
+// #define STORM_ONLY
 
 // Padding to the packets
 #define PADDING 1000
@@ -24,6 +33,11 @@ namespace ns3{
     double y = msg.position_y;
     
     std::string s = "";
+
+#ifndef AGGREGATE
+    return( s += messageUID( msg ));
+#endif
+
     s += x;
     s += ":";
     s += y;
@@ -50,7 +64,11 @@ namespace ns3{
     bool found = false;
 
     // IF we have recieved the msg before
+#ifdef STORM_ONLY
+    if(true){
+#else
     if(m_messageHash.find(messageUID(msg)) == m_messageHash.end()){
+#endif
       m_messageHash.insert(messageUID(msg));
 
       switch ( msg.type ){
@@ -123,10 +141,13 @@ namespace ns3{
 	m_crashMessages[crashId]=msg;
 	
 	broadcast(crashId, veh);
+	
+#ifdef REPEATS
 	double delay = delayRV.GetValue();
 	for(int i = 0; i < MAGIC_NUMBER; i++){
 	  activeEvents.push_back(Simulator::Schedule(Seconds(i + delay + 0.5), broadcast, crashId, veh)); 
 	}
+#endif
       }
       else{
 	print_trace("Ignoring packet.", msg, veh);
@@ -135,6 +156,9 @@ namespace ns3{
   }
 
   bool VehicleState::inDistance(Vehicle *veh, double x, double y){
+#ifndef OBSERVERS
+    return false;
+#endif
     double dx = x - veh->GetPosition().x;
     double dy = y - veh->GetPosition().y;
 
