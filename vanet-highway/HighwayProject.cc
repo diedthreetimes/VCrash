@@ -90,7 +90,6 @@ map<int, int> HighwayProject::Djikstra(int source, map<int, list<int> > connecti
  * Create the HighwayProject for the supplied configuration data
  */
 HighwayProject::HighwayProject(HighwayProjectXml projectXml) {
-    Vehicle::init_nodes();
     //Get the step distance
     m_dt = projectXml.GetDt();
     //Initialize the collections

@@ -36,7 +36,6 @@
 #include <list>
 #include <utility>
 
-
 namespace ns3 {
 
     class VehicleGenerator : public ns3::Object {
