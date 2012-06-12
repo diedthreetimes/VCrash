@@ -2,6 +2,9 @@
 
 // Comment this to turn off random delay
 #define RANDOM_DELAY
+
+// Padding to the packets
+#define PADDING 1000
 // using namespace ns3;
 
 namespace ns3{
@@ -35,6 +38,7 @@ namespace ns3{
   void VehicleState::broadcast(std::string crashId, Vehicle *veh){
     vcrash_message * agr = &(veh->GetVehicleState()->m_crashMessages[ crashId ]);
     Ptr<Packet> packet = Create<Packet>((uint8_t*) agr, sizeof(vcrash_message) ); // Magic = true for serialization
+    packet->AddPaddingAtEnd( PADDING );
     veh->SendTo(veh->GetBroadcastAddress(), packet);
     print_trace("Packet forwarded.",*agr,veh);
   }
@@ -160,6 +164,8 @@ namespace ns3{
       print_trace("Packet created.", msg, veh);
     
       Ptr<Packet> packet = Create<Packet>((uint8_t*) &msg, sizeof(vcrash_message) ); // Magic = true for serialization
+      packet->AddPaddingAtEnd( PADDING );
+      
       veh->SendTo(veh->GetBroadcastAddress(), packet);
       
       veh->SetVelocity(0);
@@ -190,7 +196,7 @@ namespace ns3{
     trace_file.close();
   }
 
-  int VehicleState::vehicleCrashId = 4;
+  int VehicleState::vehicleCrashId = 12;
   Time VehicleState::vehicleCrashTime = Seconds(30.0);
   double VehicleState::seeing_distance = 30;
 
