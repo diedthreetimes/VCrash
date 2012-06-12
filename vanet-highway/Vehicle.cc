@@ -239,7 +239,6 @@ namespace ns3 {
      */
     void Vehicle::ArriveAtDestination() {
         destinations.pop_front();
-
     }
 
     /**

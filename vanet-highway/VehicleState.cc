@@ -48,9 +48,13 @@ namespace ns3 {
     
       m_messageHash.insert(messageUID(msg));
       print_trace("Packet created.", msg, veh);
-
+    
       Ptr<Packet> packet = Create<Packet>((uint8_t*) &msg, sizeof(vcrash_message) ); // Magic = true for serialization
       veh->SendTo(veh->GetBroadcastAddress(), packet);
+      
+      veh->SetVelocity(0);
+      veh->SetAcceleration(0);
+      veh->GetModel()->SetDesiredVelocity(0.1);
     }
 
   }
@@ -73,7 +77,7 @@ namespace ns3 {
   }
 
   int VehicleState::vehicleCrashId = 4;
-  Time VehicleState::vehicleCrashTime = Seconds(15.0);
+  Time VehicleState::vehicleCrashTime = Seconds(10.0);
   bool VehicleState::trace_enabled = false;
   std::ofstream VehicleState::trace_file;
 }

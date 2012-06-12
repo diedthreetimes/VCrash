@@ -1,7 +1,6 @@
 #ifndef CLASS_VEHICLE_STATE_
 #define CLASS_VEHICLE_STATE_
 
-
 #include "ns3/core-module.h"
 #include "ns3/ptr.h"
 #include "ns3/address.h"
