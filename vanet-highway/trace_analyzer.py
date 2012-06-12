@@ -4,11 +4,12 @@
 # @author: Kyle Benson
 
 import argparse
-
+from trace import *
+'''
 def do_plots(picks,args):
-    '''
-    Plot requested figures, if any.
-    '''
+'''
+   # Plot requested figures, if any.
+'''
     nplots = (0 if args.time is None else 1) + (0 if args.data is None else len(args.data))
     if nplots < 1:
         return
@@ -81,25 +82,21 @@ def do_plots(picks,args):
             next_axes += 1
 
     plt.show()
-    
+'''    
 
 ##################################################################################
 #################      ARGUMENTS       ###########################################
 ##################################################################################
 
-parser = argparse.ArgumentParser(description='A helper script for analyzing VCrash traces and visualizing the data.',formatter_class=argparse.RawTextHelpFormatter)
-parser.add_argument('files', metavar='file', type=str, nargs='+',
-                    help='files from which to read trace data')
-parser.add_argument('--time',action='store',type=int,const=100,nargs='?',
-                    help='display histogram of pick times with optional resolution integer value (measured in 1ms increments)')
-parser.add_argument('--data','-d',action='store',type=str,nargs='?',const='xyz',
-                    help='''\
-display histograms for the sensor data, with optional arguments being a subset of
-'xyza' where each letter corresponds to whether the readings for that axis should
-be plotted, with 'a' meaning combine all 3 on one plot
-''')
+parser = argparse.ArgumentParser(description='A helper script for analyzing VCrash traces and visualizing the data.',
+                                 formatter_class=argparse.RawTextHelpFormatter)
+parser.add_argument('--trace-file','-t', '--traces', type=str, nargs=1, default='../networkTrace.csv',
+                    help='file from which to read message trace data')
+parser.add_argument('--vehicle-file', '--vehicles', type=str, nargs=1, default='../vehicleTrace.csv',
+                    help='file from which to read vehicle trace data')
 parser.add_argument('--density','-d',action='store_true',
-                    help='display penetration of message in % of vehicles that receive it over time as several plots where the traffic density of each trace file is uesd')
+                    help='display penetration of message in % of vehicles that receive it over time as several plots\
+where the traffic density of each trace file is uesd')
 parser.add_argument('--penetration','-pen','-p',action='store_true',
                     help='display penetration of message in % of vehicles that receive it over time');
 
@@ -107,12 +104,24 @@ args = parser.parse_args()
 
 ################################# MAIN ####################################
 
-traces = []
-for f in args.files:
-    traces.extend(f.readLines())
+
+with open(args.trace_file) as f:
+    traces = f.readlines()
+
+with open(args.vehicle_file) as f:
+    vehicle_traces = f.readlines()
 
 print "Total # of trace lines: %d" % len(traces)
 
-forwards = [x for x in traces if x.
+forwards = [DataTrace(x) for x in traces if x.startswith('Packet forwarded.')]
+ignores = [DataTrace(x) for x in traces if x.startswith('Ignoring packet.')]
+created = [DataTrace(x) for x in traces if x.startswith('Packet created.')]
 
-do_plots(picks,args)
+vehicles = {}
+for v in (VehicleTrace(x) for x in vehicle_traces):
+    if v.id not in vehicles:
+        vehicles[v.id] = 0
+
+print "there were %d forwards, %d ignores, and %d vehicles total" % (len(forwards), len(ignores), len(vehicles))
+
+#do_plots(created,forwards,ignores,args)

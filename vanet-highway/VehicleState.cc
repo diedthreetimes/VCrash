@@ -57,9 +57,9 @@ namespace ns3 {
 
   void VehicleState::print_trace(string label, vcrash_message msg, Vehicle * veh) {
     if (trace_enabled) {
-      trace_file << label << " TTL: " << msg.ttl 
-		 << " ID: " <<  veh->GetVehicleId()
-		 <<  " T: " << Simulator::Now().GetNanoSeconds() <<std::endl;
+      trace_file << label <<  "$ T: " << Simulator::Now().GetNanoSeconds()
+		 << ", ID: " <<  veh->GetVehicleId()
+		 << ", TTL: " << msg.ttl <<std::endl;
     }
   }
 
