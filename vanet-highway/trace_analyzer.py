@@ -57,7 +57,8 @@ for traces in msg_traces:
     created = [Message(x) for x in traces if x.startswith('Packet created.')]
     all_msgs = [Message(x) for x in traces]
     messages.append(MessageTraceData(all_msgs,forwarded,ignored,created))
-    
+
+#crash_times = [x.created[0].time for x in messages]
 vehicles = []
 for traces in veh_traces:
     vehs = {}
@@ -145,7 +146,10 @@ if args.num_packets:
 
         subplot(nrows,ncols,next_axes)
         bar(times, npackets)
-        plt.title("Number of packets sent over time")
+        title = "Number of packets sent"
+        if args.labels is not None:
+            title = title + ': ' + args.labels[i]
+        plt.title(title)
         plt.xlabel("Time since crash event (sec)")
         plt.ylabel("Packets sent per second")
         plt.plot()
