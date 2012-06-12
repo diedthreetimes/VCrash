@@ -17,6 +17,7 @@ namespace ns3 {
   class Vehicle;
 
   class VehicleState{
+
   public:
     static int vehicleCrashId;
     static Time vehicleCrashTime;    

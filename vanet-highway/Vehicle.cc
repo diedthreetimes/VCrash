@@ -39,31 +39,13 @@ namespace ns3 {
         return tid;
     }
 
-  vector<Ptr<Node> > * Vehicle::nodes_vector;
-
-  void Vehicle::init_nodes() {
-    if(Vehicle::nodes_vector != NULL)
-      return;
-    Vehicle::nodes_vector = new vector<Ptr<Node> >;
-
-    for (int i = 0; i < NUM_NODES; i++) {
-      Ptr<Node> temp = CreateObject<Node>();
-      MobilityHelper mobility;
-      mobility.Install(temp);
-      Vehicle::nodes_vector->push_back(temp);
-    }
-  }
-
     /*
      * The only constructor
      */
     Vehicle::Vehicle() {
-        // m_node = CreateObject<Node > ();
-        // MobilityHelper mobility;
-        // mobility.Install(m_node);
-      m_node = Vehicle::nodes_vector->at(Vehicle::nodes_vector->size() - 1);
-      Vehicle::nodes_vector->pop_back();
-
+        m_node = CreateObject<Node > ();
+        MobilityHelper mobility;
+        mobility.Install(m_node);
         m_vehicleId = 1;
         m_lane = 0;
         m_direction = 0;
@@ -81,65 +63,53 @@ namespace ns3 {
      * Empty destructor
      */
     Vehicle::~Vehicle() {
-      Vehicle::nodes_vector->push_back(m_node);
-
-      //TODO: Need to turn off wifi for nodes!!!
     }
 
     /*
      * Sets up Wifi for this vehicle using the supplied helpers
      */
-    bool Vehicle::Installed = false;
     void Vehicle::SetupWifi(const WifiHelper &wifi, const YansWifiPhyHelper &phy, const NqosWifiMacHelper &mac) {
-      if(Vehicle::Installed)
-        return;
+        // Don't do anything if we are equipped
+        if (IsEquipped == false) return;
 
-      Vehicle::Installed = true;
-      //Create the node container
+        //Create the node container
         NetDeviceContainer d;
-     
-        for (unsigned int i = 0; i < Vehicle::nodes_vector->size(); i++) {
-          NodeContainer n(Vehicle::nodes_vector->at(i));
-          //Use the wifi helper to install the channel on the node
-          d = wifi.Install(phy, mac, n);
-        }
+        NodeContainer n(m_node);
+        //Use the wifi helper to install the channel on the node
+        d = wifi.Install(phy, mac, n);
+
+        // Use this for concatenating strings
+        std::ostringstream oss;
+
+        // These attach callbacks to the various types of results from Wifi
+        oss << "/NodeList/" << m_node->GetId() << "/DeviceList/0/Mac/MacTx";
+        Config::Connect(oss.str(), MakeCallback(&Vehicle::DevTxTrace, this));
+        oss.str("");
+        oss << "/NodeList/" << m_node->GetId() << "/DeviceList/0/Mac/MacRx";
+        Config::Connect(oss.str(), MakeCallback(&Vehicle::DevRxTrace, this));
+        oss.str("");
+        oss << "/NodeList/" << m_node->GetId() << "/DeviceList/0/Phy/State/RxOk";
+        Config::Connect(oss.str(), MakeCallback(&Vehicle::PhyRxOkTrace, this));
+        oss.str("");
+        oss << "/NodeList/" << m_node->GetId() << "/DeviceList/0/Phy/State/RxError";
+        Config::Connect(oss.str(), MakeCallback(&Vehicle::PhyRxErrorTrace, this));
+        oss.str("");
+        oss << "/NodeList/" << m_node->GetId() << "/DeviceList/0/Phy/State/Tx";
+        Config::Connect(oss.str(), MakeCallback(&Vehicle::PhyTxTrace, this));
+        oss.str("");
+        oss << "/NodeList/" << m_node->GetId() << "/DeviceList/0/Phy/State/State";
+        Config::Connect(oss.str(), MakeCallback(&Vehicle::PhyStateTrace, this));
+
+        // This is the final level of the callback (generally the most important)
+        m_device = d.Get(0);
+        m_device->SetReceiveCallback(MakeCallback(&Vehicle::ReceivePacket, this));
     }
-
-  void Vehicle::WifiCallbacks(){
-    NetDeviceContainer d(m_node->GetDevice(0));
-
-    // Use this for concatenating strings
-    std::ostringstream oss;
-
-    // These attach callbacks to the various types of results from Wifi
-    oss << "/NodeList/" << m_node->GetId() << "/DeviceList/0/Mac/MacTx";
-    Config::Connect(oss.str(), MakeCallback(&Vehicle::DevTxTrace, this));
-    oss.str("");
-    oss << "/NodeList/" << m_node->GetId() << "/DeviceList/0/Mac/MacRx";
-    Config::Connect(oss.str(), MakeCallback(&Vehicle::DevRxTrace, this));
-    oss.str("");
-    oss << "/NodeList/" << m_node->GetId() << "/DeviceList/0/Phy/State/RxOk";
-    Config::Connect(oss.str(), MakeCallback(&Vehicle::PhyRxOkTrace, this));
-    oss.str("");
-    oss << "/NodeList/" << m_node->GetId() << "/DeviceList/0/Phy/State/RxError";
-    Config::Connect(oss.str(), MakeCallback(&Vehicle::PhyRxErrorTrace, this));
-    oss.str("");
-    oss << "/NodeList/" << m_node->GetId() << "/DeviceList/0/Phy/State/Tx";
-    Config::Connect(oss.str(), MakeCallback(&Vehicle::PhyTxTrace, this));
-    oss.str("");
-    oss << "/NodeList/" << m_node->GetId() << "/DeviceList/0/Phy/State/State";
-    Config::Connect(oss.str(), MakeCallback(&Vehicle::PhyStateTrace, this));
-
-    // This is the final level of the callback (generally the most important)
-    m_device = d.Get(0);
-    m_device->SetReceiveCallback(MakeCallback(&Vehicle::ReceivePacket, this));
-  }
 
   /**
    * Returns a pointer to the Vehicle's VehicleState object.
    *
    */
-  VehicleState * Vehicle::GetVehicleState(){
+  VehicleState * Vehicle::GetVehicleState() {
     return & m_vehState;
   }
 
