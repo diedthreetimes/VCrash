@@ -22,6 +22,11 @@ namespace ns3 {
     static Time vehicleCrashTime;
     static double seeing_distance;
 
+    // Message Types
+    static const int MSG_VICTIM = 1;
+    static const int MSG_SAW = 2;
+    static const int MSG_RELAY = 3;
+
     struct vcrash_message {
       int type;
       int ttl;

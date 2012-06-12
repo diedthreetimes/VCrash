@@ -23,16 +23,24 @@ namespace ns3 {
     vcrash_message msg;
     pac->CopyData((uint8_t *) &msg, sizeof(msg));
     
+    // IF we have recieved the msg before
     if(m_messageHash.find(messageUID(msg)) == m_messageHash.end()){
       m_messageHash.insert(messageUID(msg));
-      if(msg.type == 1){
-	if (inDistance(veh, msg.position_x, msg.position_y) == true)
-	  msg.type = 2;
+      
+      if(msg.type == MSG_VICTIM){
+	if (inDistance(veh, msg.position_x, msg.position_y) == true){
+	  msg.type = MSG_SAW;
+	  msg.ttl++;
 	}
-      else{
-	msg.type = 3;
+	else{
+	  msg.type = MSG_RELAY;
+
+	  // We need to work out a way to aggregate the messages here
+
+	}
       }
 
+      // If it hasn't gone too far yet
       if(msg.ttl > 1){
 	msg.ttl--;
 	
@@ -41,9 +49,9 @@ namespace ns3 {
 	  activeEvents.push_back(Simulator::Schedule(Seconds(i + 1), broadcast, msg, veh)); 
 	}
       }
-    }
-    else{
-      print_trace("Ignoring packet.", msg, veh);
+      else{
+	print_trace("Ignoring packet.", msg, veh);
+      }
     }
   }
 
@@ -61,7 +69,7 @@ namespace ns3 {
   void VehicleState::send(Vehicle * veh) {
     if( veh->GetVehicleId()==vehicleCrashId && Simulator::Now()==vehicleCrashTime ) {
       vcrash_message msg;
-      msg.type = 1;
+      msg.type = MSG_VICTIM;
       msg.ttl = 10;
       msg.broadcastId = m_broadcastId++;
       msg.vehId = veh->GetVehicleId();
