@@ -3,9 +3,9 @@
 // Comment this to turn off random delay
 #define RANDOM_DELAY
 // Uncomment to turn multiple observers on
- #define OBSERVERS
+// #define OBSERVERS
 // Uncomment to turn aggregation on
-#define AGGREGATE
+//#define AGGREGATE
 // Uncomment to turn on repeats
 #define REPEATS
 
@@ -64,11 +64,8 @@ namespace ns3{
     bool found = false;
 
     // IF we have recieved the msg before
-#ifdef STORM_ONLY
-    if(true){
-#else
     if(m_messageHash.find(messageUID(msg)) == m_messageHash.end()){
-#endif
+
       m_messageHash.insert(messageUID(msg));
 
       switch ( msg.type ){
@@ -133,9 +130,13 @@ namespace ns3{
 	}
 	break;
       }
-      
+
+#ifdef STORM_ONLY
+      if(true){
+#else
       // If we haven't heard about this crash yet and packet is "alive"
       if( !aggregateExists(msg) && msg.ttl > 1){
+#endif
 	msg.ttl--;
 	std::string crashId = crashUID(msg);
 	m_crashMessages[crashId]=msg;
