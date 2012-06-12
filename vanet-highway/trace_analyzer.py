@@ -58,16 +58,21 @@ for traces in msg_traces:
     all_msgs = [Message(x) for x in traces]
     messages.append(MessageTraceData(all_msgs,forwarded,ignored,created))
 
-#crash_times = [x.created[0].time for x in messages]
+#crash_info = [x.created[0].time for x in messages]
 vehicles = []
 for traces in veh_traces:
+#for (i,traces) in enumerate(veh_traces):
     vehs = {}
     for v in (Vehicle(x.strip()) for x in traces):
-        if v.id not in vehs:
+    #for v in (Vehicle(x.strip()) for x in traces if x.startswith(str(crash_times[i]))):
+        #within_distance = False
+        #if sqrt(
+        if v.id not in vehs:# and within_distance:
             vehs[v.id] = 1
-        vehicles.append(vehs)
+    vehicles.append(vehs)
 
 nvehicles = [len(v) for v in vehicles]
+print nvehicles
 #print "there were %d forwards, %d ignores, and %d vehicles total" % (len(forwards), len(ignores), len(vehicles))
 
 ###################################  PLOTS  ################################
@@ -99,7 +104,7 @@ if args.penetration:
         msgs = msgs.forwarded
         resolution = 100000000 #0.1 second resolution
         times = create_timesteps(msgs,resolution)
-
+        
         percentages = []
         for t in times:
             while msgs[0].time < t*resolution:
