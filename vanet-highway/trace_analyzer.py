@@ -4,85 +4,15 @@
 # @author: Kyle Benson
 
 import argparse
+import sys
 from trace import *
-'''
-def do_plots(picks,args):
-'''
-   # Plot requested figures, if any.
-'''
-    nplots = (0 if args.time is None else 1) + (0 if args.data is None else len(args.data))
-    if nplots < 1:
-        return
-    from matplotlib.pyplot import hist,subplot,subplots_adjust
-    import matplotlib.pyplot as plt
-    from math import ceil,sqrt
 
-    npicks = len(picks)
-    #try for smart subplot arrangements
-    if nplots > 3:
-        nrows = int(sqrt(nplots)+0.5)
-        ncols = ceil(nplots/float(nrows))
-    else:
-        nrows = 1
-        ncols = nplots
-
-    next_axes = 1
-    if args.time:
-        resolution = args.time
-        subplot(nrows,ncols,next_axes)
-        times = gdata.get_times(picks,resolution)
-        hist(times,resolution)
-        plt.title("Time histogram in resolution of %dms." % resolution)
-        plt.xlabel("Time offset from first event.")
-        plt.ylabel("Count")
-        plt.plot()
-        next_axes += 1
-        
-    if args.data:
-        arg = args.data
-        xvalues,yvalues,zvalues = gdata.xvalues,gdata.yvalues,gdata.zvalues
-        resolution = 50
-        if 'a' in arg:
-            xvalues = gdata.get_xvalues(picks)
-            yvalues = gdata.get_yvalues(picks)
-            zvalues = gdata.get_zvalues(picks)
-            subplot(nrows,ncols,next_axes)
-            hist([xvalues,yvalues,zvalues],resolution)
-            plt.title("Histogram of x-axis PGA readings")
-            plt.xlabel("PGA")
-            plt.ylabel("Count")
-            plt.plot()
-            next_axes += 1
-        if 'x' in arg:
-            xvalues = gdata.get_xvalues(picks)
-            subplot(nrows,ncols,next_axes)
-            hist(xvalues,resolution)
-            plt.title("Histogram of x-axis PGA readings")
-            plt.xlabel("PGA (m/s^2)")
-            plt.ylabel("Count")
-            plt.plot()
-            next_axes += 1
-        if 'y' in arg:
-            yvalues = gdata.get_yvalues(picks)
-            subplot(nrows,ncols,next_axes)
-            hist(yvalues,resolution)
-            plt.title("Histogram of y-axis PGA readings")
-            plt.xlabel("PGA (m/s^2)")
-            plt.ylabel("Count")
-            plt.plot()
-            next_axes += 1
-        if 'z' in arg:
-            zvalues = gdata.get_zvalues(picks)
-            subplot(nrows,ncols,next_axes)
-            hist(zvalues,resolution)
-            plt.title("Histogram of z-axis PGA readings")
-            plt.xlabel("PGA (m/s^2)")
-            plt.ylabel("Count")
-            plt.plot()
-            next_axes += 1
-
-    plt.show()
-'''    
+def create_timesteps(msgs,resolution):
+    #messages should be ordered in time
+    start_time = msgs[0].time
+    end_time = msgs[-1].time
+    times = range(start_time/resolution, end_time/resolution)
+    return times
 
 ##################################################################################
 #################      ARGUMENTS       ###########################################
@@ -90,38 +20,135 @@ def do_plots(picks,args):
 
 parser = argparse.ArgumentParser(description='A helper script for analyzing VCrash traces and visualizing the data.',
                                  formatter_class=argparse.RawTextHelpFormatter)
-parser.add_argument('--trace-file','-t', '--traces', type=str, nargs=1, default='../networkTrace.csv',
+parser.add_argument('--trace-files','-t', '--traces', nargs='+', default=['../networkTrace.csv'],metavar='trace_files',
                     help='file from which to read message trace data')
-parser.add_argument('--vehicle-file', '--vehicles', type=str, nargs=1, default='../vehicleTrace.csv',
+parser.add_argument('--vehicle-files', '--vehicles', nargs='+', default=['../vehicleTrace.csv'],metavar='vehicle_files',
                     help='file from which to read vehicle trace data')
-parser.add_argument('--density','-d',action='store_true',
-                    help='display penetration of message in % of vehicles that receive it over time as several plots\
-where the traffic density of each trace file is uesd')
 parser.add_argument('--penetration','-pen','-p',action='store_true',
-                    help='display penetration of message in % of vehicles that receive it over time');
+                    help='display penetration of message in percent of vehicles that receive it over time')
+parser.add_argument('--num-packets','-n',action='store_true',
+                    help='display total packets sent in each timestep over time')
+parser.add_argument('--labels','-l',nargs='+',
+                    help='names given to data sets contained in specified files')
 
 args = parser.parse_args()
 
+if len(args.trace_files) != len(args.vehicle_files):
+    print "The number of message and vehicle trace files should be the same!\n"
+    sys.exit(-1)
+
 ################################# MAIN ####################################
 
+msg_traces = []
+for fname in args.trace_files:
+    with open(fname) as f:
+        msg_traces.append(f.readlines())
 
-with open(args.trace_file) as f:
-    traces = f.readlines()
+veh_traces = []
+for fname in args.vehicle_files:
+    with open(fname) as f:
+        veh_traces.append(f.readlines())
 
-with open(args.vehicle_file) as f:
-    vehicle_traces = f.readlines()
+#print "Total # of trace lines: %d" % len()
+messages = []
+for traces in msg_traces:
+    forwarded = [Message(x) for x in traces if x.startswith('Packet forwarded.')]
+    ignored = [Message(x) for x in traces if x.startswith('Ignoring packet.')]
+    created = [Message(x) for x in traces if x.startswith('Packet created.')]
+    all_msgs = [Message(x) for x in traces]
+    messages.append(MessageTraceData(all_msgs,forwarded,ignored,created))
+    
+vehicles = []
+for traces in veh_traces:
+    vehs = {}
+    for v in (Vehicle(x.strip()) for x in traces):
+        if v.id not in vehs:
+            vehs[v.id] = 1
+        vehicles.append(vehs)
 
-print "Total # of trace lines: %d" % len(traces)
+nvehicles = [len(v) for v in vehicles]
+#print "there were %d forwards, %d ignores, and %d vehicles total" % (len(forwards), len(ignores), len(vehicles))
 
-forwards = [DataTrace(x) for x in traces if x.startswith('Packet forwarded.')]
-ignores = [DataTrace(x) for x in traces if x.startswith('Ignoring packet.')]
-created = [DataTrace(x) for x in traces if x.startswith('Packet created.')]
+###################################  PLOTS  ################################
 
-vehicles = {}
-for v in (VehicleTrace(x) for x in vehicle_traces):
-    if v.id not in vehicles:
-        vehicles[v.id] = 0
+nplots = (0 if args.penetration is False else 1) + (0 if args.num_packets is False else len(messages))
+if nplots == 0:
+    print "No plots requested."
+    sys.exit(0)
 
-print "there were %d forwards, %d ignores, and %d vehicles total" % (len(forwards), len(ignores), len(vehicles))
+from matplotlib.pyplot import subplot,plot,bar,legend
+import matplotlib.pyplot as plt
+#from math import ceil,sqrt
 
-#do_plots(created,forwards,ignores,args)
+#try for smart subplot arrangements
+if nplots > 3:
+    nrows = int(sqrt(nplots)+0.5)
+    ncols = ceil(nplots/float(nrows))
+else:
+    nrows = 1
+    ncols = nplots
+
+next_axes = 1
+if args.penetration:
+    data_to_plot = []
+    for (i,msgs) in enumerate(messages):
+        vehs_notified = {}
+
+        #vehicles always forward message once they see it
+        msgs = msgs.forwarded
+        resolution = 100000000 #0.1 second resolution
+        times = create_timesteps(msgs,resolution)
+
+        percentages = []
+        for t in times:
+            while msgs[0].time < t*resolution:
+                vehs_notified[msgs[0].id] = vehs_notified.get(msgs[0].id, 0) + 1
+                msgs = msgs[1:]
+
+            percentages.append((len(vehs_notified) +1)/float(nvehicles[i]) *100)
+
+        min_time = times[0]
+        times = [(t-min_time)/10 for t in times]
+
+        data_to_plot.append(times)
+        data_to_plot.append(percentages)
+
+    subplot(nrows,ncols,next_axes)
+    plot(*data_to_plot)
+
+    if args.labels is not None:
+        legend(args.labels, loc='lower right')
+
+    plt.title("Message coverage over time")
+    plt.xlabel("Time offset from crash event (sec)")
+    plt.ylabel("% of vehicles that have received the message")
+    plt.plot()
+    next_axes += 1
+
+if args.num_packets:
+    for (i,msgs) in enumerate(messages):
+        msgs = sorted(msgs.forwarded + msgs.created)
+        resolution = 1000000000 #second resolution
+        times = create_timesteps(msgs,resolution)
+
+        npackets = []
+        for t in times:
+            npacs = 0
+            while msgs[0].time < t*resolution:
+                npacs += 1
+                msgs = msgs[1:]
+
+            npackets.append(npacs)
+
+        min_time = times[0]
+        times = [t-min_time for t in times]
+
+        subplot(nrows,ncols,next_axes)
+        bar(times, npackets)
+        plt.title("Number of packets sent over time")
+        plt.xlabel("Time since crash event (sec)")
+        plt.ylabel("Packets sent per second")
+        plt.plot()
+        next_axes += 1
+
+plt.show()
