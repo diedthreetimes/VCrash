@@ -72,7 +72,7 @@ for traces in veh_traces:
     vehicles.append(vehs)
 
 nvehicles = [len(v) for v in vehicles]
-print nvehicles
+
 #print "there were %d forwards, %d ignores, and %d vehicles total" % (len(forwards), len(ignores), len(vehicles))
 
 ###################################  PLOTS  ################################
