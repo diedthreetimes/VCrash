@@ -1,0 +1,17 @@
+Packet created.$ T: 30000000000, ID: 12, TTL: 10, TYP: 1, NW: 0, VP: 1
+Packet forwarded.$ T: 30001492049, ID: 8, TTL: 9, TYP: 3, NW: 0, VP: 1
+Packet forwarded.$ T: 30001492084, ID: 14, TTL: 9, TYP: 3, NW: 0, VP: 1
+Packet forwarded.$ T: 30001492118, ID: 11, TTL: 9, TYP: 3, NW: 0, VP: 1
+Packet forwarded.$ T: 30001492136, ID: 15, TTL: 9, TYP: 3, NW: 0, VP: 1
+Packet forwarded.$ T: 30001492138, ID: 17, TTL: 9, TYP: 3, NW: 0, VP: 1
+Packet forwarded.$ T: 30001492197, ID: 13, TTL: 9, TYP: 3, NW: 0, VP: 1
+Packet forwarded.$ T: 30001492215, ID: 16, TTL: 9, TYP: 3, NW: 0, VP: 1
+Packet forwarded.$ T: 30001492334, ID: 10, TTL: 9, TYP: 3, NW: 0, VP: 1
+Packet forwarded.$ T: 30001492437, ID: 9, TTL: 9, TYP: 3, NW: 0, VP: 1
+Packet forwarded.$ T: 30001492468, ID: 19, TTL: 9, TYP: 3, NW: 0, VP: 1
+Packet forwarded.$ T: 30001492534, ID: 7, TTL: 9, TYP: 3, NW: 0, VP: 1
+Packet forwarded.$ T: 30001492572, ID: 18, TTL: 9, TYP: 3, NW: 0, VP: 1
+Packet forwarded.$ T: 30004604705, ID: 20, TTL: 8, TYP: 3, NW: 0, VP: 1
+Packet forwarded.$ T: 30004604885, ID: 22, TTL: 8, TYP: 3, NW: 0, VP: 1
+Packet forwarded.$ T: 30004605070, ID: 5, TTL: 8, TYP: 3, NW: 0, VP: 1
+Packet forwarded.$ T: 30004605191, ID: 24, TTL: 8, TYP: 3, NW: 0, VP: 1
